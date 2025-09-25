@@ -20,6 +20,18 @@ Copy the existing workload folder (`CustomPLCLibrariesWorkload`) to use as your 
 # Example: Copy existing workload folder
 cp -r "CustomPLCLibrariesWorkload" "MyCustomWorkload"
 ```
+## Example Workload Structure
+
+```
+CustomPLCLibrariesWorkload/
+├── CustomPLCLibraries.Workload.nuspec  # Main workload specification
+├── TF1000-Base.png                     # Workload icon
+└── tools/                              # Empty scripts
+    ├── chocolateyinstall.ps1           # Empty
+    ├── chocolateyuninstall.ps1         # Empty
+    └── chocolateybeforemodify.ps1      # Empty
+```
+
 
 ### 2. Create Component Packages First
 ```bash
@@ -34,12 +46,28 @@ tcpkg pack "SignalGenLibPackage/SignalGenLib.Package.nuspec" -o "<feed-path>"
 
 #### a. Update `<workload name>.nuspec` file
 - Define unique ID and version
-- **Add `<packageTypes><packageType name="Workload" /></packageTypes>`**
 - Set name, author, description
 - **Add dependencies section listing all component packages with exact versions**
 - Include "Workload" in tags
+- **Note**: The `<packageTypes><packageType name="Workload" /></packageTypes>` section is already present in the copied template - this is the critical element that makes this package show up in TcPkg as a workload
 
-#### b. Create empty PowerShell scripts in `tools/` directory
+**Example .nuspec configuration:**
+
+```xml
+<packageTypes>
+  <packageType name="Workload" />
+</packageTypes>
+
+<tags>TwinCAT Workload CustomCategory VariantPLC</tags>
+
+<dependencies>
+  <dependency id="ControlAlgorithmLib.Package" version="0.0.1" />
+  <dependency id="ScalingAndConversionLib.Package" version="0.0.1" />
+  <dependency id="SignalGenLib.Package" version="0.0.1" />
+</dependencies>
+```
+
+#### b. No modifications needed to these PowerShell scripts in `tools/` directory
 - `chocolateyinstall.ps1` - Empty file
 - `chocolateyuninstall.ps1` - Empty file
 - `chocolateybeforemodify.ps1` - Empty file
@@ -75,33 +103,9 @@ tcpkg install <workload name>
 tcpkg uninstall <workload name> --include-dependencies
 ```
 
-## Example Workload Structure
 
-```
-CustomPLCLibrariesWorkload/
-├── CustomPLCLibraries.Workload.nuspec  # Main workload specification
-├── TF1000-Base.png                     # Workload icon
-└── tools/                              # Empty scripts
-    ├── chocolateyinstall.ps1           # Empty
-    ├── chocolateyuninstall.ps1         # Empty
-    └── chocolateybeforemodify.ps1      # Empty
-```
 
-## Required .nuspec Elements
 
-```xml
-<packageTypes>
-  <packageType name="Workload" />
-</packageTypes>
-
-<tags>TwinCAT Workload CustomCategory VariantPLC</tags>
-
-<dependencies>
-  <dependency id="ControlAlgorithmLib.Package" version="0.0.1" />
-  <dependency id="ScalingAndConversionLib.Package" version="0.0.1" />
-  <dependency id="SignalGenLib.Package" version="0.0.1" />
-</dependencies>
-```
 
 ## How It Works
 
