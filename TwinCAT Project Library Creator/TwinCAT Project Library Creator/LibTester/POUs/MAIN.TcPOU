@@ -46,10 +46,10 @@ VAR
     PressureManualOutput : LREAL := 30.0;
     
     // ========== WAVEFORM OUTPUTS ==========
-    SineOut          : REAL;
-    SquareOut        : REAL;
+    SineOut          : LREAL;
+    SquareOut        : LREAL;
     SquareDigital    : BOOL;
-    SawOut           : REAL;
+    SawOut           : LREAL;
     
     // ========== SCALED PROCESS VARIABLES ==========
     PressurePSI      : LREAL;            // Scaled pressure

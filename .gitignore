@@ -15,8 +15,8 @@
 *.plcproj.orig
 *.tpy
 *.tclrs
-*.compiled-library
-*.library
+#*.compiled-library
+#*.library
 *.compileinfo
 LineIDs.dbg
 LineIDs.dbg.bak
@@ -54,3 +54,10 @@ OpenFrameworks.gitignore
 # End of https://www.toptal.com/developers/gitignore/api/twincat3
 
 .vs/
+.claude/
+
+*.~u
+
+GeneratedPackages/
+
+*.bak

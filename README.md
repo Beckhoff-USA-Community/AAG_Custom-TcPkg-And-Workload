@@ -14,19 +14,21 @@ AAG_Custom-Tcpkg-And-Workload/
 │   └── SignalGenLibPackage/            # Example PLC library package #3
 │
 ├── WorkloadExample/                     # Workload Creation Example
-│   ├── README.md                        # Workload example overview
-│   ├── WorkloadCreation.md             # Detailed workload theory & guide
+│   ├── CustomWorkloads.md              # Detailed workload theory & guide
 │   └── CustomPLCLibrariesWorkload/     # Complete workload package
 │       ├── CustomPLCLibraries.Workload.nuspec
 │       ├── TF1000-Base.png
 │       └── tools/ (empty scripts)
 │
 ├── Scripts/                             # Automation Scripts
-│   ├── TestScript.ps1                  # Automated test script for package workflow
-│   └── CleanupScript.ps1               # Cleanup script to uninstall test packages
+│   ├── TestScript.ps1                  # Simple automated test script
+│   ├── CleanupScript.ps1               # Cleanup script to uninstall test packages
+│   └── AutomatedBuild/                 # Advanced CI/CD-style automation
+│       ├── README.md                   # Automated build documentation
+│       └── AutomatedLibraryBuilder.ps1 # Complete build pipeline automation
 │
 └── TwinCAT Project Library Creator/     # TwinCAT Development Environment
-    └── TcPkgLibraryCreator.sln         # Visual Studio solution for PLC library development
+    └── TwinCAT Project Library Creator.sln # Visual Studio solution for PLC library development
 ```
 
 ## What's Included
@@ -51,26 +53,33 @@ AAG_Custom-Tcpkg-And-Workload/
 - Demonstrates how to build and export libraries for packaging
 
 ### Automation Scripts ([`Scripts/`](Scripts/))
-- **TestScript.ps1** - Automated end-to-end testing script that:
-  - Packs all 3 individual packages and the workload
-  - Sets up custom package feed
-  - Installs the complete workload
-  - Verifies installation success
-  - Includes progress reporting for each step
+- **TestScript.ps1** - Simple automated test script for basic package workflow
 - **CleanupScript.ps1** - Cleanup script that uninstalls test packages and restores settings
+- **AutomatedBuild/** - Advanced CI/CD automation examples:
+  - **AutomatedLibraryBuilder.ps1** - Complete build pipeline that compiles TwinCAT projects, creates packages, and installs workloads automatically
+  - Complete automation with error handling, validation, and comprehensive reporting
+  - Demonstrates TwinCAT Automation Interface and zero-touch deployment workflows
 
 ## Quick Start Guide
 
-### Option A: Automated Testing (Recommended)
+### Option A: Simple Testing (Recommended for Learning)
 ```powershell
-# Run the complete automated test (requires admin privileges)
+# Run the basic automated test (requires admin privileges)
 .\Scripts\TestScript.ps1
 
 # When finished testing, clean up
 .\Scripts\CleanupScript.ps1
 ```
 
-### Option B: Manual Step-by-Step
+### Option B: Advanced CI/CD Automation
+```powershell
+# Run the complete automated build pipeline
+.\Scripts\AutomatedBuild\AutomatedLibraryBuilder.ps1
+
+# See Scripts/AutomatedBuild/README.md for detailed documentation
+```
+
+### Option C: Manual Step-by-Step
 
 #### 0. Prerequisites
 ```bash
@@ -109,11 +118,13 @@ tcpkg install CustomPLCLibraries.Workload
 
 ## Getting Started
 
-1. **For Quick Testing**: Run `.\Scripts\TestScript.ps1` for automated end-to-end validation
-2. **For PLC Development**: Open `TwinCAT Project Library Creator/TcPkgLibraryCreator.sln`
-3. **For Individual Packages**: Start with [`PackageExamples/CustomPackages.md`](PackageExamples/CustomPackages.md)
-4. **For Workloads**: Start with [`WorkloadExample/CustomWorkloads.md`](WorkloadExample/CustomWorkloads.md)
-5. **For Implementation**: Use any package as a template and follow the workflows
+### Choose Your Path:
+
+1. **Learning the Basics**: Start with `.\Scripts\TestScript.ps1` for simple automated testing
+2. **Individual Packages**: Start with [`PackageExamples/CustomPackages.md`](PackageExamples/CustomPackages.md)
+3. **Workloads**: Start with [`WorkloadExample/CustomWorkloads.md`](WorkloadExample/CustomWorkloads.md)
+4. **PLC Development**: Open `TwinCAT Project Library Creator/TcPkgLibraryCreator.sln`
+5. **Advanced Automation**: See [`Scripts/AutomatedBuild/README.md`](Scripts/AutomatedBuild/README.md) for complete CI/CD-style pipelines
 
 
 ## License

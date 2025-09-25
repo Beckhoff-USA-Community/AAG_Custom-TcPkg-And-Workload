@@ -10,8 +10,9 @@ if (-not $IsAdmin) {
 # Stop on any error
 $ErrorActionPreference = "Stop"
 
-$CustomPackageSourceLocation = "C:\CustomPackages";
-$CustomPacakgeSourceFeedName = "Custom Packages";
+$scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+$CustomPackageSourceLocation = Join-Path $scriptDir "..\GeneratedPackages"
+$CustomPacakgeSourceFeedName = "Custom Packages"
 
 #Build/Pack all Packages
 Write-Host "Packing SignalGenLibPackage..."

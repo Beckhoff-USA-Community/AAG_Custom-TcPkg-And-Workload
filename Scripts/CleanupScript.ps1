@@ -10,7 +10,8 @@ if (-not $IsAdmin) {
 # Stop on any error
 $ErrorActionPreference = "Stop"
 
-$CustomPacakgeSourceFeedName = "Custom Packages";
+$scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+$CustomPacakgeSourceFeedName = "Custom Packages"
 
 #clean up our testing
 Write-Host "Uninstalling CustomPLCLibraries Workload and dependencies..."
