@@ -8,9 +8,17 @@ TwinCAT users can use custom packages to manage and deliver custom PLC libraries
 
 ## Steps to Create a Custom Package for a PLC Library
 
-### 1. Rename the .nuspec file
+### 1. Copy an existing package folder as a template
+Copy one of the existing package folders (e.g., `ControlAlgorithmLibPackage`, `ScalingAndConversionLibPackage`, or `SignalGenLibPackage`) to use as your starting template. This provides the correct folder structure and baseline configuration files.
 
-### 2. Modify configuration files
+```bash
+# Example: Copy existing package folder
+cp -r "ControlAlgorithmLibPackage" "MyCustomLibPackage"
+```
+
+### 2. Rename the .nuspec file
+
+### 3. Modify configuration files
 
 #### a. Update `<package name>.nuspec` file
 - Define a unique combination of the id and version
@@ -24,32 +32,32 @@ TwinCAT users can use custom packages to manage and deliver custom PLC libraries
 #### c. Update `chocolateyuninstall.ps1` file
 - Set the library details, e.g. "SignalGen, 0.0.0.1 (Beckhoff Automation LLC.)"
 
-### 3. Add custom feed (if not already done)
+### 4. Add custom feed (if not already done)
 ```bash
 tcpkg source add -n "<feed name>" -s "<feed path>"
 ```
 
-### 4. Create new package via the "pack" command
+### 5. Create new package via the "pack" command
 ```bash
 tcpkg pack "<full path>\<package name>.nuspec" -o "<feed path>"
 ```
 
-### 5. Check whether the package is added successfully
+### 6. Check whether the package is added successfully
 ```bash
 tcpkg list -n "<feed name>"
 ```
 
-### 6. Disable signature verification (if not already done)
+### 7. Disable signature verification (if not already done)
 ```bash
 tcpkg config unset -n VerifySignatures
 ```
 
-### 7. Install package
+### 8. Install package
 ```bash
 tcpkg install <package name>
 ```
 
-### 8. Uninstall package
+### 9. Uninstall package
 ```bash
 tcpkg uninstall <package name>
 ```

@@ -13,7 +13,15 @@ TwinCAT users can use workloads to distribute complete sets of related PLC libra
 
 ## Steps to Create a Custom Workload
 
-### 1. Create Component Packages First
+### 1. Copy an existing workload folder as a template
+Copy the existing workload folder (`CustomPLCLibrariesWorkload`) to use as your starting template. This provides the correct folder structure and baseline configuration files.
+
+```bash
+# Example: Copy existing workload folder
+cp -r "CustomPLCLibrariesWorkload" "MyCustomWorkload"
+```
+
+### 2. Create Component Packages First
 ```bash
 # Navigate to PackageExamples directory and create each component
 cd "../PackageExamples"
@@ -22,7 +30,7 @@ tcpkg pack "ScalingAndConversionLibPackage/ScalingAndConversionLib.Package.nuspe
 tcpkg pack "SignalGenLibPackage/SignalGenLib.Package.nuspec" -o "<feed-path>"
 ```
 
-### 2. Modify workload configuration files
+### 3. Modify workload configuration files
 
 #### a. Update `<workload name>.nuspec` file
 - Define unique ID and version
@@ -37,32 +45,32 @@ tcpkg pack "SignalGenLibPackage/SignalGenLib.Package.nuspec" -o "<feed-path>"
 - `chocolateybeforemodify.ps1` - Empty file
 
 
-### 3. Create workload package via the "pack" command
+### 4. Create workload package via the "pack" command
 ```bash
 tcpkg pack "<full path>\<workload name>.nuspec" -o "<feed path>"
 ```
 
-### 4. Add custom feed (if not already done)
+### 5. Add custom feed (if not already done)
 ```bash
 tcpkg source add -n "<feed name>" -s "<feed path>"
 ```
 
-### 5. Check whether the workload is added successfully
+### 6. Check whether the workload is added successfully
 ```bash
 tcpkg list -n "<feed name>" -t workload
 ```
 
-### 6. Disable signature verification (if not already done)
+### 7. Disable signature verification (if not already done)
 ```bash
 tcpkg config unset -n VerifySignatures
 ```
 
-### 7. Install workload (installs all component packages)
+### 8. Install workload (installs all component packages)
 ```bash
 tcpkg install <workload name>
 ```
 
-### 8. Uninstall workload and all of it's dependencies
+### 9. Uninstall workload and all of it's dependencies
 ```bash
 tcpkg uninstall <workload name> --include-dependencies
 ```
