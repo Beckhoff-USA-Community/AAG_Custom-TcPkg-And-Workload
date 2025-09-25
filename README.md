@@ -1,0 +1,3 @@
+# About This Repository
+
+This repository is a collection of projects dedicated to Proof-Of-Concept work for .......
