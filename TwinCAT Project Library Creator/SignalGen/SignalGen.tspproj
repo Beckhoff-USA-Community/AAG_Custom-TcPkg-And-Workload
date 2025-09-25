@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<TcSmProject xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.beckhoff.com/schemas/2012/07/TcSmProject" TcSmVersion="1.0" TcVersion="3.1.4026.18">
+	<Project ProjectGUID="{19A7554F-1449-4A2E-B223-5FD0E2B6C2EE}" TargetNetId="199.4.42.250.1.1" Target64Bit="true" ShowHideConfigurations="#x6">
+		<Plc>
+			<Project File="SignalGen.xti"/>
+		</Plc>
+	</Project>
+</TcSmProject>

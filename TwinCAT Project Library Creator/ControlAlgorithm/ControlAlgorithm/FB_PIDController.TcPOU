@@ -1,0 +1,114 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_PIDController" Id="{62d49232-e03f-4dc2-a8c8-bc496bbc6d84}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_PIDController
+VAR_INPUT
+	Enable		 : BOOL;		   // Enable PID controller
+	Setpoint	 : LREAL;		   // Desired setpoint
+	ProcessValue : LREAL;		   // Current process value (feedback)
+	Kp			 : LREAL := 1.0;   // Proportional gain
+	Ki			 : LREAL := 0.0;   // Integral gain
+	Kd			 : LREAL := 0.0;   // Derivative gain
+	OutputMin	 : LREAL := 0.0;   // Minimum output limit
+	OutputMax	 : LREAL := 100.0; // Maximum output limit
+	Reset		 : BOOL;		   // Reset integral accumulator
+	ManualMode	 : BOOL;		   // Manual mode enable
+	ManualOutput : LREAL := 0.0;   // Manual mode output value
+END_VAR
+
+VAR_OUTPUT
+	Output		   : LREAL; // PID controller output
+	Error		   : LREAL; // Current error (SP - PV)
+	IntegralTerm   : LREAL; // Integral term value
+	DerivativeTerm : LREAL; // Derivative term value
+	Saturated	   : BOOL;	// Output is saturated
+	ErrorFlag	   : BOOL;	// Error condition
+END_VAR
+
+VAR
+	ErrorPrevious : LREAL;			// Previous error for derivative calculation
+	IntegralSum	  : LREAL;			// Integral accumulator
+	CycleTime	  : LREAL := 0.001; // Cycle time in seconds
+	TaskIdx		  : DINT;
+	FirstScan	  : BOOL := TRUE;
+	OutputRaw	  : LREAL; // Raw output before limiting
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[IF FirstScan THEN
+	FirstScan := FALSE;
+	TaskIdx	  := GETCURTASKINDEXEX();
+	IF TaskIdx > 0 THEN
+		// Convert from 100ns units to seconds
+		CycleTime := TO_LREAL(TwinCAT_SystemInfoVarList._TaskInfo[TaskIdx].CycleTime) / 10000000.0;
+	END_IF
+END_IF
+
+IF Enable THEN
+	// Calculate current error
+	Error := Setpoint - ProcessValue;
+
+	// Reset integral if requested or if in manual mode
+	IF Reset OR ManualMode THEN
+		IntegralSum := 0.0;
+	END_IF
+
+	// Manual mode operation
+	IF ManualMode THEN
+		Output		   := ManualOutput;
+		IntegralTerm   := 0.0;
+		DerivativeTerm := 0.0;
+		Saturated	   := FALSE;
+		ErrorFlag	   := FALSE;
+		ErrorPrevious  := Error;
+		RETURN;
+	END_IF
+
+	// Input validation
+	IF CycleTime <= 0.0 OR OutputMax <= OutputMin THEN
+		ErrorFlag := TRUE;
+		Output	  := 0.0;
+		RETURN;
+	END_IF
+
+	// Calculate integral term with windup protection
+	IF NOT Saturated THEN
+		IntegralSum := IntegralSum + (Error * CycleTime);
+	END_IF
+
+	IntegralTerm := Ki * IntegralSum;
+
+	// Calculate derivative term
+	DerivativeTerm := Kd * (Error - ErrorPrevious) / CycleTime;
+
+	// Calculate raw PID output
+	OutputRaw := (Kp * Error) + IntegralTerm + DerivativeTerm;
+
+	// Apply output limits
+	IF OutputRaw > OutputMax THEN
+		Output	  := OutputMax;
+		Saturated := TRUE;
+	ELSIF OutputRaw < OutputMin THEN
+		Output	  := OutputMin;
+		Saturated := TRUE;
+	ELSE
+		Output	  := OutputRaw;
+		Saturated := FALSE;
+	END_IF
+
+	// Store error for next derivative calculation
+	ErrorPrevious := Error;
+	ErrorFlag	  := FALSE;
+ELSE
+	// Controller disabled
+	Output		   := 0.0;
+	Error		   := 0.0;
+	IntegralTerm   := 0.0;
+	DerivativeTerm := 0.0;
+	IntegralSum	   := 0.0;
+	ErrorPrevious  := 0.0;
+	Saturated	   := FALSE;
+	ErrorFlag	   := FALSE;
+END_IF]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

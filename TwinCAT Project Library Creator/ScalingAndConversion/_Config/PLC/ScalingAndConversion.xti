@@ -1,0 +1,4 @@
+<?xml version="1.0"?>
+<TcSmItem xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.beckhoff.com/schemas/2012/07/TcSmProject" TcSmVersion="1.0" TcVersion="3.1.4026.18" ClassName="CNestedPlcProjDef">
+	<Project GUID="{E0166A48-61E3-44E3-94F9-BF941B9578E7}" Name="ScalingAndConversion" PrjFilePath="..\..\ScalingAndConversion\ScalingAndConversion.plcproj" TmcFilePath="..\..\ScalingAndConversion\ScalingAndConversion.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e"/>
+</TcSmItem>

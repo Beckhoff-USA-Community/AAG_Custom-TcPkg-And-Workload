@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<TcSmProject xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.beckhoff.com/schemas/2012/07/TcSmProject" TcSmVersion="1.0" TcVersion="3.1.4026.18">
+	<Project ProjectGUID="{C637234A-0D37-4430-8FD3-E84B000DFB0A}" Target64Bit="true" ShowHideConfigurations="#x6">
+		<Plc>
+			<Project File="ScalingAndConversion.xti"/>
+		</Plc>
+	</Project>
+</TcSmProject>

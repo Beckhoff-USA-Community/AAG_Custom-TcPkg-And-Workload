@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2015/06/nuspec.xsd">
+  <metadata>
+    <id>ControlAlgorithmLib.Package</id>
+    <version>0.0.1</version>
+    <title>Control Algorithms Library</title>
+    <authors>Beckhoff Automation LLC</authors>
+    <projectUrl>https://www.beckhoff.com/en-us/products/automation/twincat/</projectUrl>
+    <copyright>(c) Beckhoff Automation</copyright>
+    <licenseUrl>
+      https://www.beckhoff.com/media/downloads/general-terms-and-conditions/software_license_agreement_for_beckhoff_software_products.pdf/</licenseUrl>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <icon>icon.png</icon>
+
+    <!-- tags from general beckhoff tag database (has to be defined)-->
+    <tags>Beckhoff TwinCAT AllowMultipleVersions</tags>
+
+    <!-- texts for summary and description are taken from website -->
+    <description>This is a custom package for delivering a library.</description>
+
+    <!-- <releaseNotes>__REPLACE_OR_REMOVE__MarkDown_Okay</releaseNotes> -->
+    <!-- =============================== -->
+
+    <!-- Specifying dependencies and version ranges?
+    https://docs.nuget.org/create/versioning#specifying-version-ranges-in-.nuspec-files -->
+    <dependencies>
+      <!--Add
+      Dependencies here-->
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="TF1000-Base.png" target="icon.png" />
+    <file src="tools\**" target="tools" />
+    <file src="ControlAlgorithm.library" target="tools\LibraryToInstall.library" />
+  </files>
+</package>

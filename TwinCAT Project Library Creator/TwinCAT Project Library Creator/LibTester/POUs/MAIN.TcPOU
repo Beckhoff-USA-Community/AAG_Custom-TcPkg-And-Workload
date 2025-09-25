@@ -1,0 +1,272 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="MAIN" Id="{841be0e2-124b-41d1-a83b-b1e7070463e2}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM MAIN
+VAR
+    // ========== WAVEFORM GENERATORS ==========
+    SineWave       : FB_SinewaveGenerator;
+    SquareWave     : FB_SquareWaveGenerator;
+    SawWave        : FB_SawtoothGenerator;
+    
+    // ========== SCALING & CONVERSION ==========
+    PressureScaling    : FB_LinearScaling;
+    FlowScaling       : FB_LinearScaling;
+    LevelScaling      : FB_LinearScaling;
+    TempConverter1    : FB_TemperatureConversion;
+    TempConverter2    : FB_TemperatureConversion;
+    
+    // ========== CONTROL ALGORITHMS ==========
+    TempController    : FB_PIDController;
+    PressureController : FB_PIDController;
+    NoiseFilter       : FB_MovingAverage;
+    LevelFilter       : FB_MovingAverage;
+    SignalLowPass     : FB_LowPassHighPassFilter;
+    SignalHighPass    : FB_LowPassHighPassFilter;
+    
+    // ========== SIMULATED INPUTS (normally from I/O) ==========
+    RawPressure       : INT := 2048;      // 12-bit ADC reading
+    RawFlow          : INT := 3276;      // 4-20mA flow transmitter
+    RawLevel         : INT := 1638;      // Level sensor ADC
+    TempSensorC      : REAL := 68.5;     // Temperature sensor in Celsius
+    NoisyPressure    : LREAL := 45.7;    // Noisy pressure reading
+    NoisyLevel       : LREAL := 78.3;    // Noisy level reading
+    RawVibration     : LREAL := 2.5;     // Vibration sensor signal
+    
+    // ========== CONTROL SETPOINTS & PARAMETERS ==========
+    TempSetpoint     : LREAL := 75.0;    // Temperature setpoint °C
+    PressureSetpoint : LREAL := 50.0;    // Pressure setpoint PSI
+    EnableWaveforms  : BOOL := TRUE;     // Enable waveform generation
+    EnableControl    : BOOL := TRUE;     // Enable control loops
+    EnableFiltering  : BOOL := TRUE;     // Enable signal filtering
+    
+    // Manual mode controls
+    TempManualMode   : BOOL := FALSE;
+    TempManualOutput : LREAL := 25.0;
+    PressureManualMode : BOOL := FALSE;
+    PressureManualOutput : LREAL := 30.0;
+    
+    // ========== WAVEFORM OUTPUTS ==========
+    SineOut          : REAL;
+    SquareOut        : REAL;
+    SquareDigital    : BOOL;
+    SawOut           : REAL;
+    
+    // ========== SCALED PROCESS VARIABLES ==========
+    PressurePSI      : LREAL;            // Scaled pressure
+    FlowGPM          : LREAL;            // Scaled flow rate
+    LevelPercent     : LREAL;            // Scaled level percentage
+    TempDisplayF     : LREAL;            // Temperature for HMI display
+    TempControlK     : LREAL;            // Temperature for control calculations
+    
+    // ========== FILTERED SIGNALS ==========
+    PressureFiltered : LREAL;            // Noise-filtered pressure
+    LevelFiltered    : LREAL;            // Filtered level signal
+    VibrationLowPass : LREAL;            // Low-pass filtered vibration
+    VibrationHighPass : LREAL;           // High-pass filtered vibration
+    
+    // ========== CONTROL OUTPUTS ==========
+    HeaterOutput     : LREAL;            // Temperature control output
+    ValveOutput      : LREAL;            // Pressure control output
+    
+    // ========== STATUS VARIABLES ==========
+    SystemEnabled    : BOOL := TRUE;
+    EmergencyStop    : BOOL := FALSE;
+    AlarmActive      : BOOL := FALSE;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// System safety check
+IF EmergencyStop THEN
+    EnableWaveforms := FALSE;
+    EnableControl := FALSE;
+    EnableFiltering := FALSE;
+END_IF
+
+// ========== WAVEFORM GENERATION ==========
+IF EnableWaveforms THEN
+    // Generate 2Hz sine wave for testing/simulation
+    SineWave(
+        Enable := TRUE,
+        Frequency := 2.0,          // 2 Hz
+        Amplitude := 10.0,         // ±10V amplitude
+        Offset := 0.0,             // No DC offset
+        Phase := 0.0               // No phase shift
+    );
+    SineOut := SineWave.Output;
+    
+    // Generate 1Hz square wave with 30% duty cycle
+    SquareWave(
+        Enable := TRUE,
+        Frequency := 1.0,          // 1 Hz
+        Amplitude := 5.0,          // 5V peak-to-peak
+        Offset := 2.5,             // 2.5V offset
+        DutyCycle := 30.0          // 30% duty cycle
+    );
+    SquareOut := SquareWave.Output;
+    SquareDigital := SquareWave.DigitalOut;
+    
+    // Generate 0.5Hz rising sawtooth
+    SawWave(
+        Enable := TRUE,
+        Frequency := 0.5,          // 0.5 Hz
+        Amplitude := 8.0,          // 8V peak-to-peak
+        Offset := 4.0,             // 4V offset
+        SawType := E_SawtoothType.Rising
+    );
+    SawOut := SawWave.Output;
+END_IF
+
+// ========== SIGNAL SCALING ==========
+// Scale pressure transmitter (0-4095 ADC = 0-100 PSI)
+PressureScaling(
+    Enable := SystemEnabled,
+    RawValue := TO_LREAL(RawPressure),
+    RawMin := 0.0,
+    RawMax := 4095.0,
+    ScaledMin := 0.0,
+    ScaledMax := 100.0,
+    LimitOutput := TRUE
+);
+PressurePSI := PressureScaling.ScaledValue;
+
+// Scale flow transmitter (4-20mA = 0-500 GPM)
+// 4mA = 819 counts, 20mA = 4095 counts
+FlowScaling(
+    Enable := SystemEnabled,
+    RawValue := TO_LREAL(RawFlow),
+    RawMin := 819.0,           // 4mA
+    RawMax := 4095.0,          // 20mA
+    ScaledMin := 0.0,          // 0 GPM
+    ScaledMax := 500.0,        // 500 GPM
+    LimitOutput := TRUE
+);
+FlowGPM := FlowScaling.ScaledValue;
+
+// Scale level sensor (0-4095 ADC = 0-100%)
+LevelScaling(
+    Enable := SystemEnabled,
+    RawValue := TO_LREAL(RawLevel),
+    RawMin := 0.0,
+    RawMax := 4095.0,
+    ScaledMin := 0.0,
+    ScaledMax := 100.0,
+    LimitOutput := TRUE
+);
+LevelPercent := LevelScaling.ScaledValue;
+
+// ========== TEMPERATURE CONVERSIONS ==========
+// Convert sensor reading to Fahrenheit for HMI display
+TempConverter1(
+    Enable := SystemEnabled,
+    InputTemp := TO_LREAL(TempSensorC),
+    InputUnit := E_TemperatureUnit.Celsius,
+    OutputUnit := E_TemperatureUnit.Fahrenheit
+);
+TempDisplayF := TempConverter1.OutputTemp;
+
+// Convert to Kelvin for scientific calculations
+TempConverter2(
+    Enable := SystemEnabled,
+    InputTemp := TO_LREAL(TempSensorC),
+    InputUnit := E_TemperatureUnit.Celsius,
+    OutputUnit := E_TemperatureUnit.Kelvin
+);
+TempControlK := TempConverter2.OutputTemp;
+
+// ========== SIGNAL FILTERING ==========
+IF EnableFiltering THEN
+    // Filter noisy pressure signal (15-sample moving average)
+    NoiseFilter(
+        Enable := TRUE,
+        Input := NoisyPressure,
+        SampleCount := 15,
+        Reset := FALSE
+    );
+    PressureFiltered := NoiseFilter.Output;
+    
+    // Filter noisy level signal (10-sample moving average)
+    LevelFilter(
+        Enable := TRUE,
+        Input := NoisyLevel,
+        SampleCount := 10,
+        Reset := FALSE
+    );
+    LevelFiltered := LevelFilter.Output;
+    
+    // Low-pass filter for vibration analysis (10 Hz cutoff)
+    SignalLowPass(
+        Enable := TRUE,
+        Input := RawVibration,
+        FilterType := E_FilterType.LowPass,
+        CutoffFreq := 10.0,        // 10 Hz cutoff
+        Reset := FALSE
+    );
+    VibrationLowPass := SignalLowPass.Output;
+    
+    // High-pass filter to remove DC bias (0.5 Hz cutoff)
+    SignalHighPass(
+        Enable := TRUE,
+        Input := RawVibration,
+        FilterType := E_FilterType.HighPass,
+        CutoffFreq := 0.5,         // 0.5 Hz cutoff
+        Reset := FALSE
+    );
+    VibrationHighPass := SignalHighPass.Output;
+END_IF
+
+// ========== CONTROL LOOPS ==========
+IF EnableControl THEN
+    // Temperature PID Controller
+    TempController(
+        Enable := TRUE,
+        Setpoint := TempSetpoint,
+        ProcessValue := TO_LREAL(TempSensorC),
+        Kp := 2.5,                 // Proportional gain
+        Ki := 0.1,                 // Integral gain
+        Kd := 0.05,                // Derivative gain
+        OutputMin := 0.0,          // 0% heater output
+        OutputMax := 100.0,        // 100% heater output
+        Reset := FALSE,
+        ManualMode := TempManualMode,
+        ManualOutput := TempManualOutput
+    );
+    HeaterOutput := TempController.Output;
+    
+    // Pressure PID Controller (uses filtered pressure)
+    PressureController(
+        Enable := TRUE,
+        Setpoint := PressureSetpoint,
+        ProcessValue := PressureFiltered,
+        Kp := 1.8,                 // Proportional gain
+        Ki := 0.05,                // Integral gain
+        Kd := 0.02,                // Derivative gain
+        OutputMin := 0.0,          // 0% valve opening
+        OutputMax := 100.0,        // 100% valve opening
+        Reset := FALSE,
+        ManualMode := PressureManualMode,
+        ManualOutput := PressureManualOutput
+    );
+    ValveOutput := PressureController.Output;
+ELSE
+    // Safety: Set outputs to safe values when control disabled
+    HeaterOutput := 0.0;
+    ValveOutput := 0.0;
+END_IF
+
+// ========== ALARM LOGIC ==========
+// Basic alarm conditions
+AlarmActive := (PressurePSI > 90.0) OR              // High pressure
+               (TO_LREAL(TempSensorC) > 85.0) OR    // High temperature
+               (LevelPercent < 10.0) OR             // Low level
+               TempController.ErrorFlag OR           // PID error
+               PressureController.ErrorFlag OR       // PID error
+               PressureScaling.Error OR             // Scaling error
+               FlowScaling.Error OR                 // Scaling error
+               TempConverter1.Error;                // Conversion error
+
+// Emergency shutdown on critical alarms
+IF (PressurePSI > 95.0) OR (TO_LREAL(TempSensorC) > 90.0) THEN
+    EmergencyStop := TRUE;
+END_IF]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

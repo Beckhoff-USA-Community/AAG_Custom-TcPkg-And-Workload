@@ -1,0 +1,61 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_SinewaveGenerator" Id="{55401005-f44f-463b-8be4-e3917c9cdb84}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_SinewaveGenerator
+VAR_INPUT
+	Enable	  : BOOL;		  // Enable generator
+	Frequency : LREAL := 1.0; // Frequency in Hz
+	Amplitude : LREAL := 1.0; // Amplitude
+	Offset	  : LREAL := 0.0; // DC offset
+	Phase	  : LREAL := 0.0; // Phase offset in degrees
+END_VAR
+
+VAR_OUTPUT
+	Output : LREAL; // Sine wave output
+	Error  : BOOL; // Error flag
+END_VAR
+
+VAR
+	TimeAccum : LREAL;			// Internal time accumulator
+	DeltaTime : LREAL;			// Delta time per cycle
+	PhaseRad  : LREAL;			// Phase in radians
+	CycleTime : LREAL := 0.001; // 1ms cycle time (adjust as needed)
+	TaskIdx	  : DINT;
+	FirstScan : BOOL := TRUE;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// Function block code
+IF FirstScan THEN
+	FirstScan := FALSE;
+	TaskIdx	  := GETCURTASKINDEXEX();
+	IF TaskIdx > 0 THEN
+		CycleTime := TO_LREAL(TwinCAT_SystemInfoVarList._TaskInfo[TaskIdx].CycleTime)/ 10000000.0;;
+	END_IF
+END_IF
+
+IF Enable THEN
+	// Convert phase from degrees to radians
+	PhaseRad := Phase * Tc2_System.PI / 180.0;
+
+	// Calculate delta time increment
+	DeltaTime := Frequency * 2.0 * Tc2_System.PI * CycleTime;
+
+	// Accumulate time
+	TimeAccum := TimeAccum + DeltaTime;
+
+	// Wrap time to prevent overflow
+	IF TimeAccum >= 2.0 * Tc2_System.PI THEN
+		TimeAccum := TimeAccum - 2.0 * Tc2_System.PI;
+	END_IF
+
+	// Generate sine wave
+	Output := Amplitude * SIN(TimeAccum + PhaseRad) + Offset;
+	Error  := FALSE;
+ELSE
+	TimeAccum := 0.0;
+	Output	  := Offset;
+	Error	  := FALSE;
+END_IF]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

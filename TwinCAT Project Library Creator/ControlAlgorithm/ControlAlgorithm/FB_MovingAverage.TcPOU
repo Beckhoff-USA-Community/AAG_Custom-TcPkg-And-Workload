@@ -1,0 +1,99 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_MovingAverage" Id="{a7080be1-ecff-4f20-85ca-a9b007d90da7}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_MovingAverage
+VAR_INPUT
+    Enable      : BOOL;           // Enable filter
+    Input       : LREAL;          // Input signal to filter
+    SampleCount : UDINT := 10;    // Number of samples in moving average (1-100)
+    Reset       : BOOL;           // Reset filter buffer
+END_VAR
+
+VAR_OUTPUT
+    Output      : LREAL;          // Filtered output
+    Valid       : BOOL;           // Output is valid (buffer is full)
+    Error       : BOOL;           // Error flag
+END_VAR
+
+VAR
+    SampleBuffer : ARRAY[1..100] OF LREAL;  // Circular buffer for samples
+    BufferIndex  : UDINT := 1;              // Current buffer index
+    BufferSum    : LREAL := 0.0;            // Sum of all samples in buffer
+    BufferFull   : BOOL := FALSE;           // Buffer has been filled once
+    SamplesFilled : UDINT := 0;             // Number of valid samples in buffer
+    LastSampleCount : UDINT := 0;           // Previous sample count for validation
+END_VAR
+
+VAR CONSTANT
+    MaxSamples : UDINT := 100;    // Maximum number of samples
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// Function block code
+IF Enable THEN
+    // Input validation
+    IF SampleCount < 1 OR SampleCount > MaxSamples THEN
+        Error := TRUE;
+        Output := Input;  // Pass through on error
+        Valid := FALSE;
+        RETURN;
+    END_IF
+    
+    // Reset buffer if requested or sample count changed
+    IF Reset OR (SampleCount <> LastSampleCount) THEN
+        // Clear the buffer
+        FOR BufferIndex := 1 TO MaxSamples DO
+            SampleBuffer[BufferIndex] := 0.0;
+        END_FOR
+        BufferIndex := 1;
+        BufferSum := 0.0;
+        BufferFull := FALSE;
+        SamplesFilled := 0;
+        LastSampleCount := SampleCount;
+    END_IF
+    
+    // Remove old sample from sum if buffer position was previously used
+    IF SamplesFilled >= SampleCount THEN
+        BufferSum := BufferSum - SampleBuffer[BufferIndex];
+    END_IF
+    
+    // Add new sample to buffer and sum
+    SampleBuffer[BufferIndex] := Input;
+    BufferSum := BufferSum + Input;
+    
+    // Update sample count
+    IF SamplesFilled < SampleCount THEN
+        SamplesFilled := SamplesFilled + 1;
+    END_IF
+    
+    // Calculate moving average
+    Output := BufferSum / TO_LREAL(SamplesFilled);
+    
+    // Update buffer index (circular buffer)
+    BufferIndex := BufferIndex + 1;
+    IF BufferIndex > SampleCount THEN
+        BufferIndex := 1;
+        BufferFull := TRUE;
+    END_IF
+    
+    // Output is valid when we have enough samples
+    Valid := (SamplesFilled >= SampleCount);
+    Error := FALSE;
+    
+ELSE
+    // Filter disabled - pass through input
+    Output := Input;
+    Valid := FALSE;
+    Error := FALSE;
+    
+    // Reset buffer when disabled
+    FOR BufferIndex := 1 TO MaxSamples DO
+        SampleBuffer[BufferIndex] := 0.0;
+    END_FOR
+    BufferIndex := 1;
+    BufferSum := 0.0;
+    BufferFull := FALSE;
+    SamplesFilled := 0;
+END_IF]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

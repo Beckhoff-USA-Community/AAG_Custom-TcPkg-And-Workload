@@ -1,0 +1,110 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_TemperatureConversion" Id="{952293d0-cc9e-41a4-945d-628771465ee4}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_TemperatureConversion
+VAR_INPUT
+    Enable       : BOOL;                                    // Enable conversion
+    InputTemp    : LREAL;                                   // Input temperature value
+    InputUnit    : E_TemperatureUnit := E_TemperatureUnit.Celsius;  // Input unit
+    OutputUnit   : E_TemperatureUnit := E_TemperatureUnit.Fahrenheit; // Desired output unit
+END_VAR
+
+VAR_OUTPUT
+    OutputTemp   : LREAL;                                   // Converted temperature
+    Error        : BOOL;                                    // Error flag
+    ErrorMessage : STRING(80);                              // Error description
+END_VAR
+
+VAR
+    TempCelsius  : LREAL;                                   // Intermediate Celsius value
+END_VAR
+
+VAR CONSTANT
+    AbsoluteZeroC : LREAL := -273.15;  // Absolute zero in Celsius
+    AbsoluteZeroF : LREAL := -459.67;  // Absolute zero in Fahrenheit
+END_VAR
+
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[IF Enable THEN
+    Error := FALSE;
+    ErrorMessage := '';
+    
+    // First convert input to Celsius as intermediate step
+    CASE InputUnit OF
+        E_TemperatureUnit.Celsius:
+            TempCelsius := InputTemp;
+            // Check for physically impossible temperature
+            IF InputTemp < AbsoluteZeroC THEN
+                Error := TRUE;
+                ErrorMessage := 'Temperature below absolute zero';
+                OutputTemp := 0.0;
+                RETURN;
+            END_IF
+            
+        E_TemperatureUnit.Fahrenheit:
+            // Check for physically impossible temperature
+            IF InputTemp < AbsoluteZeroF THEN
+                Error := TRUE;
+                ErrorMessage := 'Temperature below absolute zero';
+                OutputTemp := 0.0;
+                RETURN;
+            END_IF
+            TempCelsius := (InputTemp - 32.0) * 5.0 / 9.0;
+            
+        E_TemperatureUnit.Kelvin:
+            // Check for physically impossible temperature
+            IF InputTemp < 0.0 THEN
+                Error := TRUE;
+                ErrorMessage := 'Temperature below absolute zero';
+                OutputTemp := 0.0;
+                RETURN;
+            END_IF
+            TempCelsius := InputTemp - 273.15;
+            
+        E_TemperatureUnit.Rankine:
+            // Check for physically impossible temperature
+            IF InputTemp < 0.0 THEN
+                Error := TRUE;
+                ErrorMessage := 'Temperature below absolute zero';
+                OutputTemp := 0.0;
+                RETURN;
+            END_IF
+            TempCelsius := (InputTemp - 491.67) * 5.0 / 9.0;
+            
+        ELSE
+            Error := TRUE;
+            ErrorMessage := 'Invalid input temperature unit';
+            OutputTemp := 0.0;
+            RETURN;
+    END_CASE
+    
+    // Now convert from Celsius to desired output unit
+    CASE OutputUnit OF
+        E_TemperatureUnit.Celsius:
+            OutputTemp := TempCelsius;
+            
+        E_TemperatureUnit.Fahrenheit:
+            OutputTemp := (TempCelsius * 9.0 / 5.0) + 32.0;
+            
+        E_TemperatureUnit.Kelvin:
+            OutputTemp := TempCelsius + 273.15;
+            
+        E_TemperatureUnit.Rankine:
+            OutputTemp := (TempCelsius + 273.15) * 9.0 / 5.0;
+            
+        ELSE
+            Error := TRUE;
+            ErrorMessage := 'Invalid output temperature unit';
+            OutputTemp := 0.0;
+            RETURN;
+    END_CASE
+    
+ELSE
+    OutputTemp := 0.0;
+    Error := FALSE;
+    ErrorMessage := '';
+END_IF]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

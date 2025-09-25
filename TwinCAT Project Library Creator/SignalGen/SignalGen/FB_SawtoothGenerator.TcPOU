@@ -1,0 +1,72 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_SawtoothGenerator" Id="{4ee4fc5d-b38f-4207-b27b-52212254b660}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_SawtoothGenerator
+VAR_INPUT
+	Enable	  : BOOL;									 // Enable generator
+	Frequency : LREAL		   := 1.0;					 // Frequency in Hz
+	Amplitude : LREAL		   := 1.0;					 // Amplitude (peak to peak)
+	Offset	  : LREAL		   := 0.0;					 // DC offset
+	SawType	  : E_SawtoothType := E_SawtoothType.Rising; // Sawtooth type
+END_VAR
+
+VAR_OUTPUT
+	Output : LREAL; // Sawtooth wave output
+	Error  : BOOL; // Error flag
+END_VAR
+
+VAR
+	TimeAccum : LREAL;			// Internal time accumulator
+	Period	  : LREAL;			// Period in seconds
+	CycleTime : LREAL := 0.001; // 1ms cycle time (adjust as needed)
+	TaskIdx	  : DINT;
+	FirstScan : BOOL := TRUE;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[IF FirstScan THEN
+	FirstScan := FALSE;
+	TaskIdx	  := GETCURTASKINDEXEX();
+	IF TaskIdx > 0 THEN
+		CycleTime := TO_LREAL(TwinCAT_SystemInfoVarList._TaskInfo[TaskIdx].CycleTime)/ 10000000.0;;
+	END_IF
+END_IF
+
+IF Enable THEN
+	// Input validation
+	IF Frequency <= 0.0 THEN
+		Error  := TRUE;
+		Output := Offset;
+		RETURN;
+	END_IF
+
+	// Calculate period
+	Period := 1.0 / Frequency;
+
+	// Accumulate time
+	TimeAccum := TimeAccum + CycleTime;
+
+	// Reset time at end of period
+	IF TimeAccum >= Period THEN
+		TimeAccum := TimeAccum - Period;
+	END_IF
+
+	// Generate sawtooth wave based on type
+	CASE SawType OF
+		E_SawtoothType.Rising:
+			// Rising sawtooth: starts at -amplitude/2, rises to +amplitude/2
+			Output := (TimeAccum / Period) * Amplitude - (Amplitude / 2.0) + Offset;
+
+		E_SawtoothType.Falling:
+			// Falling sawtooth: starts at +amplitude/2, falls to -amplitude/2
+			Output := ((Period - TimeAccum) / Period) * Amplitude - (Amplitude / 2.0) + Offset;
+	END_CASE
+
+	Error := FALSE;
+ELSE
+	TimeAccum := 0.0;
+	Output	  := Offset;
+	Error	  := FALSE;
+END_IF]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

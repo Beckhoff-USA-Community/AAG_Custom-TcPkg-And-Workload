@@ -1,0 +1,78 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_SquareWaveGenerator" Id="{1a4d6d9c-dcc9-4f3f-9f2f-0eed8c1d5b3a}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_SquareWaveGenerator
+VAR_INPUT
+    Enable     : BOOL;         // Enable generator
+    Frequency  : LREAL := 1.0; // Frequency in Hz
+    Amplitude  : LREAL := 1.0; // Amplitude (peak to peak)
+    Offset     : LREAL := 0.0; // DC offset
+    DutyCycle  : LREAL := 50.0; // Duty cycle in percentage (0-100)
+END_VAR
+
+VAR_OUTPUT
+    Output     : REAL; // Square wave output
+    DigitalOut : BOOL; // Boolean output
+    Error      : BOOL; // Error flag
+END_VAR
+
+VAR
+    TimeAccum  : LREAL; // Internal time accumulator
+    Period     : LREAL; // Period in seconds
+    OnTime     : LREAL; // On time duration
+    State      : BOOL;  // Current state
+    CycleTime  : LREAL := 0.001; // 1ms cycle time (adjust as needed)
+    TaskIdx    : DINT;
+    FirstScan  : BOOL := TRUE;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[IF FirstScan THEN
+    FirstScan := FALSE;
+    TaskIdx := GETCURTASKINDEXEX();
+    IF TaskIdx > 0 THEN
+        CycleTime := TO_LREAL(TwinCAT_SystemInfoVarList._TaskInfo[TaskIdx].CycleTime)/ 10000000.0;;
+    END_IF
+END_IF
+
+IF Enable THEN
+    // Input validation
+    IF Frequency <= 0.0 OR DutyCycle < 0.0 OR DutyCycle > 100.0 THEN
+        Error := TRUE;
+        Output := Offset;
+        DigitalOut := FALSE;
+        RETURN;
+    END_IF
+    
+    // Calculate period and on time
+    Period := 1.0 / Frequency;
+    OnTime := Period * DutyCycle / 100.0;
+    
+    // Accumulate time
+    TimeAccum := TimeAccum + CycleTime;
+    
+    // Reset time at end of period
+    IF TimeAccum >= Period THEN
+        TimeAccum := TimeAccum - Period;
+    END_IF
+    
+    // Determine output state
+    State := TimeAccum < OnTime;
+    DigitalOut := State;
+    
+    // Generate square wave output
+    IF State THEN
+        Output := Amplitude / 2.0 + Offset;
+    ELSE
+        Output := -Amplitude / 2.0 + Offset;
+    END_IF
+    
+    Error := FALSE;
+ELSE
+    TimeAccum := 0.0;
+    Output := Offset;
+    DigitalOut := FALSE;
+    Error := FALSE;
+END_IF]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

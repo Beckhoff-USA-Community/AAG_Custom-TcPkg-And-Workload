@@ -1,0 +1,67 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_LinearScaling" Id="{40d63ec5-6ba0-4b2d-9205-c22e7603ce21}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_LinearScaling
+VAR_INPUT
+    Enable      : BOOL;          // Enable scaling
+    RawValue    : LREAL;         // Raw input value (e.g., ADC counts)
+    RawMin      : LREAL := 0.0;  // Minimum raw value
+    RawMax      : LREAL := 4095.0; // Maximum raw value (e.g., 12-bit ADC)
+    ScaledMin   : LREAL := 0.0;  // Minimum scaled value (engineering units)
+    ScaledMax   : LREAL := 100.0; // Maximum scaled value (engineering units)
+    LimitOutput : BOOL := TRUE;  // Limit output to scaled range
+END_VAR
+
+VAR_OUTPUT
+    ScaledValue : LREAL;         // Scaled output value
+    OutOfRange  : BOOL;          // Input is outside raw range
+    Error       : BOOL;          // Error flag
+END_VAR
+
+VAR
+    Scale       : LREAL;         // Calculated scaling factor
+    Offset      : LREAL;         // Calculated offset
+    TempValue   : LREAL;         // Temporary calculation value
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[IF Enable THEN
+    // Input validation
+    IF RawMax <= RawMin THEN
+        Error := TRUE;
+        ScaledValue := 0.0;
+        OutOfRange := TRUE;
+        RETURN;
+    END_IF
+    
+    // Calculate scaling parameters
+    Scale := (ScaledMax - ScaledMin) / (RawMax - RawMin);
+    Offset := ScaledMin - (Scale * RawMin);
+    
+    // Check if input is within expected range
+    OutOfRange := (RawValue < RawMin) OR (RawValue > RawMax);
+    
+    // Perform linear scaling: y = mx + b
+    TempValue := Scale * RawValue + Offset;
+    
+    // Apply output limiting if enabled
+    IF LimitOutput THEN
+        IF TempValue < ScaledMin THEN
+            ScaledValue := ScaledMin;
+        ELSIF TempValue > ScaledMax THEN
+            ScaledValue := ScaledMax;
+        ELSE
+            ScaledValue := TempValue;
+        END_IF
+    ELSE
+        ScaledValue := TempValue;
+    END_IF
+    
+    Error := FALSE;
+ELSE
+    ScaledValue := 0.0;
+    OutOfRange := FALSE;
+    Error := FALSE;
+END_IF]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>
