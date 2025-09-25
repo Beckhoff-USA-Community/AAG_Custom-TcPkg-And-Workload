@@ -35,21 +35,20 @@ AAG_Custom-Tcpkg-And-Workload/
 - **3 complete PLC library packages** ready to pack and install
 - Each demonstrates proper TcPkg package structure
 - Each installs a custom `.library` file using RepTool.exe
-- Includes comprehensive documentation on [package creation workflow](PackageExamples/CustomPackages.md)
+- Includes examples on [package creation workflow](PackageExamples/CustomPackages.md)
 - Can be used as templates for your own packages
 
 ### Workload Package ([`WorkloadExample/`](WorkloadExample/))
 - **Complete workload** that bundles all 3 library packages together
 - Demonstrates meta-package structure with dependencies
 - Shows proper `<packageType name="Workload" />` configuration
-- Includes both [theoretical guide](WorkloadExample/WorkloadCreation.md) and [practical implementation](WorkloadExample/CustomPLCLibrariesWorkload/)
+- Includes examples on [Workload creation workflow ](WorkloadExample/CustomWorkloads.md/)
 - One command installs all 3 libraries
 
 ### TwinCAT Development Environment ([`TwinCAT Project Library Creator/`](TwinCAT%20Project%20Library%20Creator/))
 - **Example TwinCAT solution** showing how to develop the PLC libraries
 - Contains separate library projects: ControlAlgorithm, ScalingAndConversion, SignalGen
 - Demonstrates how to build and export libraries for packaging
-- Shows integration with Visual Studio/TwinCAT XAE
 
 ### Automation Scripts ([`Scripts/`](Scripts/))
 - **TestScript.ps1** - Automated end-to-end testing script that:
