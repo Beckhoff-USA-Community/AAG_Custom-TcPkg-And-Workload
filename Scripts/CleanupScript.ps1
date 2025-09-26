@@ -11,6 +11,7 @@ if (-not $IsAdmin) {
 $ErrorActionPreference = "Stop"
 
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+$CustomPackageSourceLocation = Join-Path $scriptDir "..\GeneratedPackages"
 $CustomPacakgeSourceFeedName = "Custom Packages"
 
 #clean up our testing
@@ -20,6 +21,9 @@ tcpkg uninstall CustomPLCLibraries.Workload --include-dependencies -y
 #remove Custom Feed
 Write-Host "Removing package feed $CustomPacakgeSourceFeedName"
 tcpkg source remove $CustomPacakgeSourceFeedName
+
+#Delete Custom feed folder
+Remove-Item -Path $CustomPackageSourceLocation -Force
 
 #Turn signature verfication back on
 Write-Host "Re-enabling signature verification..."

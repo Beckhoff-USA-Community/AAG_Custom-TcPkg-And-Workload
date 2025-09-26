@@ -14,6 +14,12 @@ $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $CustomPackageSourceLocation = Join-Path $scriptDir "..\GeneratedPackages"
 $CustomPacakgeSourceFeedName = "Custom Packages"
 
+
+ # Ensure package output directory exists
+ if (!(Test-Path $CustomPackageSourceLocation)) {
+     New-Item -ItemType Directory -Path $CustomPackageSourceLocation -Force | Out-Null
+ }
+
 #Build/Pack all Packages
 Write-Host "Packing SignalGenLibPackage..."
 tcpkg pack ".\PackageExamples\SignalGenLibPackage\SignalGenLib.Package.nuspec" -o $CustomPackageSourceLocation
