@@ -1,27 +1,31 @@
 # Automated Library Builder V2
 
-The `AutomatedLibraryBuilderV2.ps1` script provides complete automation for building, packaging, and distributing TwinCAT PLC libraries.
+The `AutomatedLibraryBuilderV2.ps1` script demonstrates how to automate TwinCAT PLC library building, packaging, and distribution using the TwinCAT Automation Interface, and TcPkg.
+
+> **Note:** This script is designed as a reference implementation to showcase the key TwinCAT automation tools and techniques. For enterprise-scale CI/CD deployments, consider integrating these techniques with dedicated automation platforms such as Jenkins, Azure DevOps, GitLab CI/CD with GitLab Runner, or GitHub Actions.
 
 ## What It Does
 
-Automates the entire workflow from TwinCAT compilation to workload installation:
+Automates the entire workflow from TwinCAT compilation to workload installation.
 
-- **Compiles TwinCAT Projects**: Uses the [TwinCAT Automation Interface](https://infosys.beckhoff.com/content/1033/tc3_automationinterface/index.html?id=3954232867334285510) to build PLC projects
-- **Extracts PLC Project Metadata**: Reads Author, Company Name, Description, and Version from project properties
-- **Validates Compilation**: Checks for errors and only processes error-free projects
-- **Saves Libraries**: Exports compiled projects as `.library` files
-- **Creates Package Structures**: Generates package directories from templates
-- **Populates Package Metadata**: Automatically fills `.nuspec` files with project metadata (author, version, description, etc.)
-- **Builds Packages**: Creates TcPkg packages for each library
-- **Builds Workloads**: Bundles packages into distributable workloads with automatic version incrementing
-- **Sets Up Package Feed**: Configures TcPkg with custom package source
-- **Installs Everything**: Installs the complete workload with all dependencies
-- **Comprehensive Reporting**: Provides detailed status and error reporting at each step
-
+- **Opens an existing solution file**
+- **Searches for all standalone PLC projects**
+- **Extracts standalone PLC project metadata**: Reads Author, Company Name, Description, and Version from project properties
+- **Compiles each standalone PLC project** ([`CheckAllObjects()`](https://infosys.beckhoff.com/content/1033/tc3_automationinterface/242730891.html?id=4348531785314855660)): Checks for errors and only processes error-free projects
+- **Not implemented** - [static analysis](https://infosys.beckhoff.com/content/1033/te1200_tc3_plcstaticanalysis/6894897803.html?id=1335098833639765454) could be integrated
+- **Not implemented** - unit testing could be performed by [activating a TwinCAT project onto a target](https://infosys.beckhoff.com/content/1033/tc3_automationinterface/242929035.html?id=4660678065558732348)
+- **Saves libraries**: Exports standalone PLC projects as `.library` files
+- **Creates package structures**: Generates package directories from templates
+- **Populates package metadata**: Automatically fills `.nuspec` files with project metadata (author, version, description, etc.)
+- **Builds packages**: Creates TcPkg packages for each library
+- **Builds workload**: Creates a workload meta-package that references all library packages as dependencies with automatic version incrementing
+- **Not implemented** - packages could be published to a NuGet package server for centralized distribution
+- **Sets up package feed**: Configures TcPkg with custom package source (local folder in this example)
+- **Installs everything**: Installs the workload with all dependencies
+- **Comprehensive reporting**: Provides detailed status and error reporting at each step
 
 **Supporting Files:**
 - **Automation.psm1** - Reusable PowerShell module with TwinCAT automation functions
-- **MessageFilter.ps1** - COM message filtering for DTE operations
 - **CleanupScript.ps1** - Removes all generated artifacts and restores system state
 
 ## Configuration
@@ -47,7 +51,10 @@ $config = @{
 - TwinCAT XAE installed (3.1.4026 or later)
 - PowerShell 7 or later
 - Administrative privileges (for TcPkg operations)
-- Tested against TcPkg 2.3.55 
+- Tested against TcPkg 2.3.55
+
+## Usage
+
 ### Run the Script
 
 ```powershell

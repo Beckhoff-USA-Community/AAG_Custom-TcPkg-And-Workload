@@ -1,14 +1,5 @@
-#
+
 # AutomatedLibraryBuilderV2.ps1 - Clean, Modular PLC Library Build Pipeline
-#
-# This script demonstrates a well-structured automation pipeline for TwinCAT PLC libraries:
-# 1. Get list of PLC projects in solution
-# 2. Check PLC projects for compilation errors
-# 3. Get PLC project information (company, version, library name) from XML
-#
-# Author: Generated for AAG Custom TcPkg and Workload
-# Version: 2.0
-#
 
 # --- Helper function for conditional elevation ---
 function Invoke-ElevatedCommand {
