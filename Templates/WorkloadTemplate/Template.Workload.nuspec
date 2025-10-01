@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <!-- Unique workload identifier (e.g., "MyCustomLibraries.Workload") -->
+    <id>TEMPLATE_WORKLOAD_ID</id>
+
+    <!-- Package version number (e.g., "1.0.0") -->
+    <version>TEMPLATE_VERSION</version>
+
+    <!-- Human-readable workload title (e.g., "My Custom PLC Libraries") -->
+    <title>TEMPLATE_TITLE</title>
+
+    <!-- Package author/company name (e.g., "Your Company Name") -->
+    <authors>TEMPLATE_AUTHORS</authors>
+
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <licenseUrl>
+      https://www.beckhoff.com/media/downloads/general-terms-and-conditions/software_license_agreement_for_beckhoff_software_products.pdf</licenseUrl>
+    <icon>icon.png</icon>
+    <projectUrl>https://www.beckhoff.com/en-us/products/automation/twincat/</projectUrl>
+
+    <!-- Brief description of what this workload contains (e.g., "Contains custom PLC libraries for motion control") -->
+    <description>TEMPLATE_DESCRIPTION</description>
+
+    <!-- Copyright notice (e.g., "(c) 2024 Your Company Name") -->
+    <copyright>TEMPLATE_COPYRIGHT</copyright>
+
+    <!-- Space-separated tags for package discovery (keep "Beckhoff TwinCAT Workload" + add custom tags) -->
+    <tags>TEMPLATE_TAGS</tags>
+
+    <!-- Key element that makes this a workload - DO NOT MODIFY -->
+    <packageTypes>
+      <packageType name="Workload" />
+    </packageTypes>
+
+    <!-- Dependencies - all component packages that this workload installs -->
+    <!-- Manual format: <dependency id="YourLibrary.Package" version="1.0.0" /> -->
+    <dependencies>
+TEMPLATE_DEPENDENCIES
+    </dependencies>
+  </metadata>
+
+  <files>
+    <file src="TF1000-Base.png" target="icon.png" />
+    <file src="tools\**" target="tools" />
+  </files>
+</package>

@@ -19,7 +19,7 @@
     <Company>Beckhoff Automation LLC.</Company>
     <Released>false</Released>
     <Title>ScalingAndConversion</Title>
-    <ProjectVersion>0.0.0.1</ProjectVersion>
+    <ProjectVersion>0.0.1</ProjectVersion>
     <GlobalVersionStructureIncluded>true</GlobalVersionStructureIncluded>
     <POUsForPropertyAccessIncluded>true</POUsForPropertyAccessIncluded>
     <VirtualLibrary>true</VirtualLibrary>
@@ -34,6 +34,8 @@
     <SelectedLibraryCategories>
       <Id xmlns="">{595feabf-0c31-4156-8e51-7b896bf72db4}</Id>
     </SelectedLibraryCategories>
+    <Author>m.kleven@beckhoff.com</Author>
+    <Description>Scaling and conversion algorithms</Description>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="E_TemperatureUnit.TcDUT">
@@ -73,8 +75,8 @@
   <ProjectExtensions>
     <PlcProjectOptions>
       <XmlArchive>
-  <Data>
-    <o xml:space="preserve" t="OptionKey">
+        <Data>
+          <o xml:space="preserve" t="OptionKey">
       <v n="Name">"&lt;ProjectRoot&gt;"</v>
       <d n="SubKeys" t="Hashtable" ckt="String" cvt="OptionKey">
         <v>{192FAD59-8248-4824-A8DE-9177C94C195A}</v>
@@ -144,14 +146,14 @@
       </d>
       <d n="Values" t="Hashtable" />
     </o>
-  </Data>
-  <TypeList>
-    <Type n="Boolean">System.Boolean</Type>
-    <Type n="Hashtable">System.Collections.Hashtable</Type>
-    <Type n="OptionKey">{54dd0eac-a6d8-46f2-8c27-2f43c7e49861}</Type>
-    <Type n="String">System.String</Type>
-  </TypeList>
-</XmlArchive>
+        </Data>
+        <TypeList>
+          <Type n="Boolean">System.Boolean</Type>
+          <Type n="Hashtable">System.Collections.Hashtable</Type>
+          <Type n="OptionKey">{54dd0eac-a6d8-46f2-8c27-2f43c7e49861}</Type>
+          <Type n="String">System.String</Type>
+        </TypeList>
+      </XmlArchive>
     </PlcProjectOptions>
   </ProjectExtensions>
 </Project>

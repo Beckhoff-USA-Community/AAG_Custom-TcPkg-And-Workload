@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2015/06/nuspec.xsd">
+  <metadata>
+    <!-- Unique package identifier (e.g., "MyLibrary.Package") -->
+    <id>ControlAlgorithmLib.Package</id>
+
+    <!-- Package version number (e.g., "1.0.0") -->
+    <version>0.0.2</version>
+
+    <!-- Human-readable package title (e.g., "My PLC Library Package") -->
+    <title>ControlAlgorithmLib Package</title>
+
+    <!-- Package author/company name (e.g., "Your Company Name") -->
+    <authors>m.kleven@beckhoff.com</authors>
+
+    <projectUrl>https://www.beckhoff.com/en-us/products/automation/twincat/</projectUrl>
+
+    <!-- Copyright notice (e.g., "(c) 2024 Your Company Name") -->
+    <copyright>(c) Beckhoff Automation LLC.</copyright>
+
+    <licenseUrl>
+      https://www.beckhoff.com/media/downloads/general-terms-and-conditions/software_license_agreement_for_beckhoff_software_products.pdf/</licenseUrl>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <icon>icon.png</icon>
+
+    <!-- Tags for package discovery (keep "Beckhoff TwinCAT AllowMultipleVersions" + add custom tags) -->
+    <tags>Beckhoff TwinCAT AllowMultipleVersions ControlAlgorithm</tags>
+
+    <!-- Brief description of what this package contains (e.g., "PLC library for motor control functions") -->
+    <description>Control Algorithms</description>
+
+    <!-- <releaseNotes>__REPLACE_OR_REMOVE__MarkDown_Okay</releaseNotes> -->
+    <!-- =============================== -->
+
+    <!-- Specifying dependencies and version ranges?
+    https://docs.nuget.org/create/versioning#specifying-version-ranges-in-.nuspec-files -->
+    <dependencies>
+      <!--Add
+      Dependencies here-->
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="TF1000-Base.png" target="icon.png" />
+    <file src="tools\**" target="tools" />
+    <!-- Library file to include in package (e.g., "MyLibrary.library") -->
+    <file src="ControlAlgorithm.library" target="tools\LibraryToInstall.library" />
+  </files>
+</package>

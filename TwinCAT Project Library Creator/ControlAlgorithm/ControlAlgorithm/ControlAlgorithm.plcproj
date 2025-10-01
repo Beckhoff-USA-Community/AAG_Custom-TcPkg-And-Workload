@@ -19,7 +19,7 @@
     <Company>Beckhoff Automation LLC.</Company>
     <Released>false</Released>
     <Title>ControlAlgorithm</Title>
-    <ProjectVersion>0.0.0.1</ProjectVersion>
+    <ProjectVersion>0.0.2</ProjectVersion>
     <GlobalVersionStructureIncluded>true</GlobalVersionStructureIncluded>
     <POUsForPropertyAccessIncluded>true</POUsForPropertyAccessIncluded>
     <AllowChecksForLibrary>true</AllowChecksForLibrary>
@@ -34,6 +34,8 @@
     <SelectedLibraryCategories>
       <Id xmlns="">{6165ea97-8635-4dad-a5fb-90dff452e57e}</Id>
     </SelectedLibraryCategories>
+    <Description>Control Algorithms</Description>
+    <Author>m.kleven@beckhoff.com</Author>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="E_FilterType.TcDUT">

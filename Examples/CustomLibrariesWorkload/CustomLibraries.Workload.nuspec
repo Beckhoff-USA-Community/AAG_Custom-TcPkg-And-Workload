@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <!-- Unique workload identifier (e.g., "MyCustomLibraries.Workload") -->
+    <id>CustomLibraries.Workload</id>
+
+    <!-- Package version number (e.g., "1.0.0") -->
+    <version>1.0.2</version>
+
+    <!-- Human-readable workload title (e.g., "My Custom PLC Libraries") -->
+    <title>Custom PLC Libraries Workload</title>
+
+    <!-- Package author/company name (e.g., "Your Company Name") -->
+    <authors>Beckhoff Automation LLC.</authors>
+
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <licenseUrl>
+      https://www.beckhoff.com/media/downloads/general-terms-and-conditions/software_license_agreement_for_beckhoff_software_products.pdf</licenseUrl>
+    <icon>icon.png</icon>
+    <projectUrl>https://www.beckhoff.com/en-us/products/automation/twincat/</projectUrl>
+
+    <!-- Brief description of what this workload contains (e.g., "Contains custom PLC libraries for motion control") -->
+    <description>A workload package containing custom PLC libraries: ScalingAndConversion, ControlAlgorithm, SignalGen</description>
+
+    <!-- Copyright notice (e.g., "(c) 2024 Your Company Name") -->
+    <copyright>(c) Beckhoff Automation LLC.</copyright>
+
+    <!-- Space-separated tags for package discovery (keep "Beckhoff TwinCAT Workload" + add custom tags) -->
+    <tags>Beckhoff TwinCAT Workload CustomPLCLibraries CategoryCustom VariantPLC</tags>
+
+    <!-- Key element that makes this a workload - DO NOT MODIFY -->
+    <packageTypes>
+      <packageType name="Workload" />
+    </packageTypes>
+
+    <!-- Dependencies - all component packages that this workload installs -->
+    <!-- Manual format: <dependency id="YourLibrary.Package" version="1.0.0" /> -->
+    <dependencies>
+      <dependency id="ScalingAndConversionLib.Package" version="0.0.1" />
+      <dependency id="ControlAlgorithmLib.Package" version="0.0.2" />
+      <dependency id="SignalGenLib.Package" version="0.0.3" />
+    </dependencies>
+  </metadata>
+
+  <files>
+    <file src="TF1000-Base.png" target="icon.png" />
+    <file src="tools\**" target="tools" />
+  </files>
+</package>

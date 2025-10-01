@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2015/06/nuspec.xsd">
+  <metadata>
+    <!-- Unique package identifier (e.g., "MyLibrary.Package") -->
+    <id>TEMPLATE_PACKAGE_ID</id>
+
+    <!-- Package version number (e.g., "1.0.0") -->
+    <version>TEMPLATE_VERSION</version>
+
+    <!-- Human-readable package title (e.g., "My PLC Library Package") -->
+    <title>TEMPLATE_TITLE</title>
+
+    <!-- Package author/company name (e.g., "Your Company Name") -->
+    <authors>TEMPLATE_AUTHORS</authors>
+
+    <projectUrl>https://www.beckhoff.com/en-us/products/automation/twincat/</projectUrl>
+
+    <!-- Copyright notice (e.g., "(c) 2024 Your Company Name") -->
+    <copyright>TEMPLATE_COPYRIGHT</copyright>
+
+    <licenseUrl>
+      https://www.beckhoff.com/media/downloads/general-terms-and-conditions/software_license_agreement_for_beckhoff_software_products.pdf/</licenseUrl>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <icon>icon.png</icon>
+
+    <!-- Tags for package discovery (keep "Beckhoff TwinCAT AllowMultipleVersions" + add custom tags) -->
+    <tags>TEMPLATE_TAGS</tags>
+
+    <!-- Brief description of what this package contains (e.g., "PLC library for motor control functions") -->
+    <description>TEMPLATE_DESCRIPTION</description>
+
+    <!-- <releaseNotes>__REPLACE_OR_REMOVE__MarkDown_Okay</releaseNotes> -->
+    <!-- =============================== -->
+
+    <!-- Specifying dependencies and version ranges?
+    https://docs.nuget.org/create/versioning#specifying-version-ranges-in-.nuspec-files -->
+    <dependencies>
+      <!--Add
+      Dependencies here-->
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="TF1000-Base.png" target="icon.png" />
+    <file src="tools\**" target="tools" />
+    <!-- Library file to include in package (e.g., "MyLibrary.library") -->
+    <file src="TEMPLATE_LIBRARY_FILE" target="tools\LibraryToInstall.library" />
+  </files>
+</package>

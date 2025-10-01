@@ -19,7 +19,7 @@
     <Company>Beckhoff Automation LLC.</Company>
     <Released>false</Released>
     <Title>SignalGen</Title>
-    <ProjectVersion>0.0.0.1</ProjectVersion>
+    <ProjectVersion>0.0.3</ProjectVersion>
     <VirtualLibrary>true</VirtualLibrary>
     <AllowChecksForLibrary>true</AllowChecksForLibrary>
     <GlobalVersionStructureIncluded>true</GlobalVersionStructureIncluded>
@@ -34,6 +34,8 @@
     <SelectedLibraryCategories>
       <Id xmlns="">{aa954f50-e1a9-463e-aac4-4891e4176090}</Id>
     </SelectedLibraryCategories>
+    <Author>m.kleven@beckhoff.com</Author>
+    <Description>Signal generator algorithms</Description>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="E_SawtoothType.TcDUT">
