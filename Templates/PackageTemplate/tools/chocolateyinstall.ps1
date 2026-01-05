@@ -1,6 +1,6 @@
-﻿$toolsDir = "$(Split-Path -parent $MyInvocation.MyCommand.Definition)" 
+﻿$toolsDir = "$(Split-Path -parent $MyInvocation.MyCommand.Definition)"
 $fileLocation = Join-Path $toolsDir "LibraryToInstall.library"
-$RepToolLocations = @(Join-Path "C:\Program Files (x86)\Beckhoff\TwinCAT\3.1\Components\Plc\Build_4026.*\" "Common\RepTool.exe" -Resolve)
+$RepToolLocations = @(Join-Path "$Env:TWINCAT3DIR\Components\Plc\Build_4026.*\" "Common\RepTool.exe" -Resolve)
 if ($RepToolLocations.Length -gt 0) {
 	$RepToolLocation = $RepToolLocations[$RepToolLocations.Length-1]
 	$index = $RepToolLocation.IndexOf("\Build_4026.")
